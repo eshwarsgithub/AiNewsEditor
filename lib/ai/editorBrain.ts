@@ -10,7 +10,9 @@ const BASE_URL = (process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/
 
 export const SECTION_IDS = ["general", "editorial", "sports", "business", "cinema"] as const;
 
-export const isAiConfigured = () => Boolean(process.env.OPENROUTER_API_KEY);
+export const openRouterKey = (): string | undefined => process.env.OPENROUTER_API_KEY || undefined;
+
+export const isAiConfigured = () => Boolean(openRouterKey());
 
 const StoryEdit = z.object({
   id: z.string(),
@@ -78,7 +80,7 @@ function extractJson(text: string): unknown {
 
 /** One request with every story, so the model can rank them against each other. Throws on any failure. */
 export async function runEditorBrain(articles: Article[]): Promise<{ articles: Article[]; edits: AiEdit[] }> {
-  const key = process.env.OPENROUTER_API_KEY;
+  const key = openRouterKey();
   if (!key) throw new Error("No OpenRouter key is set on the server (OPENROUTER_API_KEY).");
 
   const stories: Input[] = articles.map((a) => ({
