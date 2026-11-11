@@ -1,4 +1,4 @@
-# AI News Editor
+# AI News Editor 
 
 Add stories and photos, press one button, and get a print-ready newspaper PDF.
 
