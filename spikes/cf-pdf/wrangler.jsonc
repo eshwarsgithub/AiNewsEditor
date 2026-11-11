@@ -1,0 +1,8 @@
+{
+  "name": "cf-pdf-spike",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Worker runs locally; only the browser is Cloudflare's hosted Chromium.
+  "browser": { "binding": "BROWSER", "remote": true }
+}

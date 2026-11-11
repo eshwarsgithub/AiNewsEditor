@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+node_modules
+
+# cloudflare spike: local wrangler state and generated test payload
+spikes/cf-pdf/.wrangler/
+spikes/cf-pdf/payload.json
+.wrangler/
+
+# real newspaper sample PDF (large, and not ours to publish by default)
+samples/*.pdf
+
+# keep the documented example env file despite the .env* rule above
+!.env.example
