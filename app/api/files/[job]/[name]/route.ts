@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { onCloudflare } from "@/lib/runtime";
 
 const types: Record<string, string> = { ".pdf": "application/pdf", ".png": "image/png" };
 
 export async function GET(_req: Request, ctx: RouteContext<"/api/files/[job]/[name]">) {
   const { job, name } = await ctx.params;
+  if (onCloudflare()) return new Response("Not found", { status: 404 });
   if (!/^[0-9a-f-]{36}$/.test(job) || !/^edition(-page\d+)?\.(pdf|png)$/.test(name)) {
     return new Response("Not found", { status: 404 });
   }

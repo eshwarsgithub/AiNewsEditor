@@ -87,7 +87,23 @@ lib/
 samples/                  Sample stories and placeholder photos
 scripts/build-sample.ts   Build the sample edition from the command line
 spikes/cf-pdf/            Cloudflare Browser Rendering experiment (see below)
+wrangler.jsonc             Cloudflare Worker config (name must match the dashboard Worker)
+open-next.config.ts       OpenNext adapter config for Cloudflare
 ```
+
+## Deploying to Cloudflare Workers
+
+The app builds for Cloudflare Workers with the [OpenNext adapter](https://opennext.js.org/cloudflare). `npm run build` runs that build (use `npm run build:next` for a plain Next.js build), and `wrangler deploy` uploads it. This matches Cloudflare Workers Builds with its default commands: build `npm run build`, deploy `npx wrangler deploy`.
+
+```bash
+npm run preview   # build and run the Worker locally
+npm run deploy    # build and deploy to your Cloudflare account
+```
+
+- **The Worker name in `wrangler.jsonc` (`ainewseditor`) must match the Worker in the Cloudflare dashboard**, including the `WORKER_SELF_REFERENCE` service binding. A mismatch fails the deploy with error 10143.
+- **Set `OPENROUTER_API_KEY` as a runtime secret** on the Worker (Settings → Variables and secrets), not as a build variable.
+- **Current status:** the screens, the sample edition and the AI-status check work on Workers. **PDF generation does not yet**: it needs a local file system and Chromium, so on a Worker it returns a clear "not enabled" message. Enabling it means moving to Cloudflare Browser Rendering (proven in `spikes/cf-pdf/`) and R2 for the generated files.
+- The deployed bundle is about 2.5 MB compressed, close to the 3 MB free-plan limit.
 
 ## Limitations
 

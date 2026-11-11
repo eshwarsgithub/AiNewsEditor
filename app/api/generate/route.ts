@@ -1,10 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import mammoth from "mammoth";
 import { runEditorBrain, AI_MODEL, type AiEdit } from "@/lib/ai/editorBrain";
 import { planEdition } from "@/lib/editor/plan";
-import { buildEdition } from "@/lib/render/pdf";
+import { GENERATION_UNAVAILABLE, onCloudflare } from "@/lib/runtime";
 import type { Article, EditionConfig } from "@/lib/types";
 
 export const maxDuration = 120;
@@ -38,6 +37,7 @@ export async function POST(req: Request) {
     async start(controller) {
       const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + "\n"));
       try {
+        if (onCloudflare()) throw new Error(GENERATION_UNAVAILABLE);
         if (!payload.articles?.length) throw new Error("Add at least one story.");
 
         const job = randomUUID();
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
           let body = a.body ?? "";
           const docx = form.get(`docx_${a.id}`);
           if (docx instanceof File && docx.size) {
+            const mammoth = (await import("mammoth")).default;
             const { value } = await mammoth.extractRawText({ buffer: Buffer.from(await docx.arrayBuffer()) });
             body = value.trim();
           }
@@ -111,6 +112,7 @@ export async function POST(req: Request) {
           });
         }
 
+        const { buildEdition } = await import("@/lib/render/pdf");
         const res = await buildEdition(plan, payload.config, dir, "edition", (stage) => send({ step: stage }));
 
         const byId = new Map(edited.map((a) => [a.id, a]));

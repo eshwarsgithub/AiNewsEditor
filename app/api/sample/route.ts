@@ -1,7 +1,6 @@
-import fs from "node:fs";
-import path from "node:path";
+import sample from "@/samples/articles.json";
 
+// Imported at build time so it also works where there is no file system (Cloudflare Workers).
 export async function GET() {
-  const raw = fs.readFileSync(path.join(process.cwd(), "samples", "articles.json"), "utf8");
-  return new Response(raw, { headers: { "content-type": "application/json" } });
+  return Response.json(sample);
 }
