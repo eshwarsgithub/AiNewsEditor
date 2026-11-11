@@ -1,0 +1,10 @@
+{
+  "name": "cf-pdf-spike",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "wrangler dev" },
+  "devDependencies": {
+    "@cloudflare/playwright": "latest",
+    "wrangler": "latest"
+  }
+}
