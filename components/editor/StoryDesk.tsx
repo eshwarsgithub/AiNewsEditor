@@ -604,13 +604,8 @@ export default function StoryDesk({ config, setConfig, drafts, setDrafts, saved,
                   AI editor <span className="ml-1 font-sans text-xs font-semibold text-navy">{aiOn ? "On" : "Off"}</span>
                 </h2>
                 <p id="ai-d" className="mt-1 mb-0 text-[13px] leading-[1.55] text-ink-soft">
-                  The AI writes headlines and key points, and sets each story&rsquo;s section and importance. You review its work on the proof.
+                  When on, the AI writes headlines and key points and sets each story&rsquo;s section and importance.
                 </p>
-                {aiAvailable === false && (
-                  <p className="mt-2 mb-0 text-[13px] leading-[1.55] font-medium text-warn-ink">
-                    Not available: add OPENROUTER_API_KEY to the server&rsquo;s environment and restart.
-                  </p>
-                )}
               </div>
             </div>
 
