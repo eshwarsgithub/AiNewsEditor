@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { EditionConfig, PagePlan, PlacedStory } from "../types";
 import { fontCss, pageCss } from "./css";
+import { SAMPLE_IMAGES } from "./embedded.generated";
 
 export const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -15,6 +16,8 @@ const mime: Record<string, string> = {
 };
 
 function dataUri(p: string) {
+  if (p.startsWith("data:")) return p;
+  if (SAMPLE_IMAGES[p]) return SAMPLE_IMAGES[p];
   const abs = path.isAbsolute(p) ? p : path.join(process.cwd(), p);
   const ext = path.extname(abs).toLowerCase();
   return `data:${mime[ext] ?? "image/png"};base64,${fs.readFileSync(abs).toString("base64")}`;

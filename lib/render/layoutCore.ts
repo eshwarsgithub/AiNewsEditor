@@ -125,7 +125,7 @@ export async function layoutInPage(
 
   await page.setContent(html, { waitUntil: "load" });
   // esbuild/tsx may wrap functions with __name(); shim it for in-browser evaluate()
-  await page.evaluate("window.__name = (f) => f; document.fonts.ready");
+  await page.evaluate("window.__name = window.__name2 = window.__name3 = (f) => f; document.fonts.ready");
 
   // Phase 1: fit the front page, collect what spills over (jumps).
   const front = await fitBodies(page, `.page[data-page="1"]`);

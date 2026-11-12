@@ -12,6 +12,7 @@
     "deploy": "opennextjs-cloudflare build && wrangler deploy"
   },
   "dependencies": {
+    "@cloudflare/playwright": "^1.4.0",
     "@fontsource/anek-telugu": "^5.3.0",
     "@fontsource/noto-sans-telugu": "^5.3.0",
     "@fontsource/noto-serif-telugu": "^5.3.0",

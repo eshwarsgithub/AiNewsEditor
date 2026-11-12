@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Must match the Worker name in the Cloudflare dashboard (Workers Builds).
   "name": "ainewseditor",
-  "main": ".open-next/worker.js",
+  "main": "worker-entry.mjs",
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
@@ -16,5 +16,10 @@
       "service": "ainewseditor"
     }
   ],
+  // Headless Chromium for layout + PDF.
+  "browser": { "binding": "BROWSER", "remote": true },
+  // Finished PDFs and page previews.
+  "r2_buckets": [{ "binding": "OUT", "bucket_name": "ainewseditor-out" }],
+  "keep_names": false,
   "observability": { "enabled": true }
 }

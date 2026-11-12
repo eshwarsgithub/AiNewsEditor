@@ -1,26 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
-
-const fontDir = (pkg: string) => path.join(process.cwd(), "node_modules/@fontsource", pkg, "files");
-
-function face(family: string, pkg: string, file: string, weight: number) {
-  const buf = fs.readFileSync(path.join(fontDir(pkg), file));
-  return `@font-face{font-family:"${family}";font-weight:${weight};font-style:normal;src:url(data:font/woff2;base64,${buf.toString("base64")}) format("woff2");}`;
-}
+import { FONT_CSS } from "./embedded.generated";
 
 // Fonts are embedded as base64 so the renderer is fully offline and PDF-embeddable.
-export function fontCss() {
-  return [
-    face("Anek Telugu", "anek-telugu", "anek-telugu-telugu-400-normal.woff2", 400),
-    face("Anek Telugu", "anek-telugu", "anek-telugu-telugu-800-normal.woff2", 800),
-    face("Anek Telugu Latin", "anek-telugu", "anek-telugu-latin-400-normal.woff2", 400),
-    face("Anek Telugu Latin", "anek-telugu", "anek-telugu-latin-800-normal.woff2", 800),
-    face("Noto Serif Telugu", "noto-serif-telugu", "noto-serif-telugu-telugu-400-normal.woff2", 400),
-    face("Noto Serif Telugu", "noto-serif-telugu", "noto-serif-telugu-telugu-700-normal.woff2", 700),
-    face("Noto Serif Telugu Latin", "noto-serif-telugu", "noto-serif-telugu-latin-400-normal.woff2", 400),
-    face("Noto Serif Telugu Latin", "noto-serif-telugu", "noto-serif-telugu-latin-700-normal.woff2", 700),
-  ].join("\n");
-}
+export const fontCss = () => FONT_CSS;
 
 // Broadsheet 340 x 540 mm (matches the pilot sample), 6 columns.
 export const PAGE_W = 340;

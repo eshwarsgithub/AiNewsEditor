@@ -3,7 +3,9 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { runEditorBrain, AI_MODEL, type AiEdit } from "@/lib/ai/editorBrain";
 import { planEdition } from "@/lib/editor/plan";
-import { GENERATION_UNAVAILABLE, onCloudflare } from "@/lib/runtime";
+import { GENERATION_UNAVAILABLE, cfEnv, onCloudflare } from "@/lib/runtime";
+import { SAMPLE_IMAGES } from "@/lib/render/embedded.generated";
+import type { ProofPage } from "@/lib/types";
 import type { Article, EditionConfig } from "@/lib/types";
 
 export const maxDuration = 120;
@@ -37,12 +39,14 @@ export async function POST(req: Request) {
     async start(controller) {
       const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + "\n"));
       try {
-        if (onCloudflare()) throw new Error(GENERATION_UNAVAILABLE);
+        const cf = onCloudflare();
+        const env = cf ? cfEnv() : undefined;
+        if (cf && !(env?.BROWSER && env.OUT)) throw new Error(GENERATION_UNAVAILABLE);
         if (!payload.articles?.length) throw new Error("Add at least one story.");
 
         const job = randomUUID();
         const dir = path.join(process.cwd(), "out", "jobs", job);
-        fs.mkdirSync(dir, { recursive: true });
+        if (!cf) fs.mkdirSync(dir, { recursive: true });
 
         const articles: Article[] = [];
         let photos = 0;
@@ -61,10 +65,18 @@ export async function POST(req: Request) {
           let image: Article["image"];
           const img = form.get(`image_${a.id}`);
           if (img instanceof File && img.size) {
-            const p = path.join(dir, `img${i + 1}${safeExt(img.name)}`);
-            fs.writeFileSync(p, Buffer.from(await img.arrayBuffer()));
-            image = { path: p, caption: a.imageCaption };
-          } else if (a.imagePath?.startsWith("samples/images/") && !a.imagePath.includes("..")) {
+            const buf = Buffer.from(await img.arrayBuffer());
+            const ext = safeExt(img.name);
+            if (cf) {
+              // No disk on Workers: inline the photo as a data URI.
+              const mime = ext === ".svg" ? "image/svg+xml" : ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : `image/${ext.slice(1)}`;
+              image = { path: `data:${mime};base64,${buf.toString("base64")}`, caption: a.imageCaption };
+            } else {
+              const p = path.join(dir, `img${i + 1}${ext}`);
+              fs.writeFileSync(p, buf);
+              image = { path: p, caption: a.imageCaption };
+            }
+          } else if (a.imagePath && SAMPLE_IMAGES[a.imagePath]) {
             image = { path: a.imagePath, caption: a.imageCaption };
           }
           if (image) photos++;
@@ -112,8 +124,25 @@ export async function POST(req: Request) {
           });
         }
 
-        const { buildEdition } = await import("@/lib/render/pdf");
-        const res = await buildEdition(plan, payload.config, dir, "edition", (stage) => send({ step: stage }));
+        let res: { report: string[]; layout: ProofPage[]; jumpIds: string[]; trimmed: { id: string; page: number }[] };
+        const pdfUrl = `/api/files/${job}/edition.pdf`;
+        let previewUrls: string[];
+        if (cf) {
+          const { buildEditionOnCloudflare } = await import("@/lib/render/cfBuild");
+          const built = await buildEditionOnCloudflare(env!.BROWSER as never, plan, payload.config, (stage) => send({ step: stage }));
+          const bucket = env!.OUT!;
+          await bucket.put(`jobs/${job}/edition.pdf`, built.pdf, { httpMetadata: { contentType: "application/pdf" } });
+          await Promise.all(
+            built.previews.map((png, i) => bucket.put(`jobs/${job}/edition-page${i + 1}.png`, png, { httpMetadata: { contentType: "image/png" } })),
+          );
+          previewUrls = built.previews.map((_, i) => `/api/files/${job}/edition-page${i + 1}.png`);
+          res = built;
+        } else {
+          const { buildEdition } = await import("@/lib/render/pdf");
+          const local = await buildEdition(plan, payload.config, dir, "edition", (stage) => send({ step: stage }));
+          previewUrls = local.previews.map((p) => `/api/files/${job}/${path.basename(p)}`);
+          res = local;
+        }
 
         const byId = new Map(edited.map((a) => [a.id, a]));
         const warnings: { kind: "gap" | "trim"; page: number; text: string; mm?: number }[] = [];
@@ -143,8 +172,8 @@ export async function POST(req: Request) {
         send({
           result: {
             job,
-            pdf: `/api/files/${job}/edition.pdf`,
-            previews: res.previews.map((p) => `/api/files/${job}/${path.basename(p)}`),
+            pdf: pdfUrl,
+            previews: previewUrls,
             pages: res.layout.map((l) => ({ ...l })),
             stories: edited.map((a) => ({ id: a.id, headline: a.headline, importance: a.importance, section: a.section })),
             leadId: lead?.id ?? null,
