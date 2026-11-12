@@ -426,7 +426,7 @@ export default function StoryDesk({ config, setConfig, drafts, setDrafts, saved,
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink bg-paper px-10 py-3.5">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink bg-paper px-4 sm:px-6 lg:px-10 py-3.5">
         <Brand paperName={config.paperName} sub={config.date} />
         <div className="flex flex-wrap items-center gap-3">
           <span className="flex items-center gap-1.5 text-[13px] text-muted">
@@ -448,7 +448,7 @@ export default function StoryDesk({ config, setConfig, drafts, setDrafts, saved,
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-[1360px] flex-col gap-7 px-10 pt-7 pb-16">
+      <main className="mx-auto flex max-w-[1360px] flex-col gap-7 px-4 pt-6 pb-24 sm:px-6 sm:pt-7 sm:pb-16 lg:px-10">
         {/* Edition setup */}
         <section aria-labelledby="setup-h" className="rounded-[3px] border border-rule bg-card">
           <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-3.5">
@@ -469,7 +469,7 @@ export default function StoryDesk({ config, setConfig, drafts, setDrafts, saved,
           </div>
           {setupOpen && (
             <div className="grid grid-cols-[repeat(auto-fit,minmax(min(190px,100%),1fr))] gap-x-5 gap-y-4 border-t border-rule-soft px-5 pt-[18px] pb-[22px]">
-              <div className="flex flex-col gap-1.5 [grid-column:span_2]">
+              <div className="flex flex-col gap-1.5 sm:[grid-column:span_2]">
                 <label htmlFor="f-te" className={LABEL}>
                   Paper name · Local language
                 </label>
@@ -505,7 +505,7 @@ export default function StoryDesk({ config, setConfig, drafts, setDrafts, saved,
           <section aria-labelledby="desk-h" className="flex min-w-0 flex-[999_1_640px] flex-col gap-[18px]">
             <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-2.5">
               <div>
-                <h1 id="desk-h" className="m-0 font-display text-[34px] leading-[1.15] font-bold tracking-[-0.015em]">
+                <h1 id="desk-h" className="m-0 font-display text-[28px] sm:text-[34px] leading-[1.15] font-bold tracking-[-0.015em]">
                   Story desk
                 </h1>
                 <p className="mt-1 mb-0 text-sm text-muted">Add stories in any order. The editor decides what leads and where everything goes.</p>

@@ -33,7 +33,7 @@ export default function GeneratingView({ config, done, leadHeadline, error, aiOn
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-10 py-3.5">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-4 sm:px-6 lg:px-10 py-3.5">
         <Brand paperName={config.paperName} />
         <button
           onClick={onCancel}
@@ -44,14 +44,14 @@ export default function GeneratingView({ config, done, leadHeadline, error, aiOn
         </button>
       </header>
 
-      <main className="mx-auto flex max-w-[1200px] flex-wrap items-start justify-center gap-16 px-10 pt-14 pb-16">
+      <main className="mx-auto flex max-w-[1200px] flex-wrap items-start justify-center gap-8 px-4 sm:px-6 lg:px-10 lg:gap-16 pt-8 pb-16 sm:pt-14">
         {/* Progress */}
         <section aria-labelledby="g-h" className="flex min-w-0 max-w-[560px] flex-[1_1_440px] flex-col gap-7">
           <div>
             <p className="m-0 mb-2 text-xs font-semibold tracking-[.08em] text-navy uppercase">
               Step {stepNo} of {STEPS.length}
             </p>
-            <h1 id="g-h" className="m-0 font-display text-[40px] leading-[1.1] font-bold tracking-[-0.015em]">
+            <h1 id="g-h" className="m-0 font-display text-[30px] sm:text-[40px] leading-[1.1] font-bold tracking-[-0.015em]">
               {error ? "Could not set your pages" : "Setting your pages"}
             </h1>
             <p className="mt-2.5 mb-0 max-w-[46ch] text-[15px] text-ink-soft">

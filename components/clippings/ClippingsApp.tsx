@@ -177,14 +177,14 @@ export default function ClippingsApp() {
   if (view === "generating") {
     return (
       <div className="min-h-screen bg-paper">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-10 py-3.5">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-4 sm:px-6 lg:px-10 py-3.5">
           <Brand paperName={config.paperName} />
           <button onClick={cancel} className={BTN_OUTLINE}>
             {error ? "Back to clippings" : "Cancel"}
           </button>
         </header>
-        <main className="mx-auto max-w-[620px] px-6 pt-14 pb-16">
-          <h1 className="m-0 font-display text-[34px] leading-[1.15] font-bold tracking-[-0.01em]">{error ? "Could not build the newspaper" : "Building your newspaper"}</h1>
+        <main className="mx-auto max-w-[620px] px-4 pt-8 pb-24 sm:px-6 sm:pt-14">
+          <h1 className="m-0 font-display text-[28px] sm:text-[34px] leading-[1.15] font-bold tracking-[-0.01em]">{error ? "Could not build the newspaper" : "Building your newspaper"}</h1>
           {error ? (
             <p role="alert" className="mt-4 rounded-[3px] border border-danger bg-warn-soft px-4 py-3 text-[14px] text-danger">
               {error}
@@ -222,7 +222,7 @@ export default function ClippingsApp() {
     const placedOn = (id: string) => result.pages.find((p) => p.placed.some((c) => c.id === id))?.number;
     return (
       <div className="min-h-screen bg-paper">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-10 py-3.5">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-4 sm:px-6 lg:px-10 py-3.5">
           <Brand paperName={config.paperName} sub="Proof" />
           <div className="flex flex-wrap gap-3">
             <button onClick={() => setView("desk")} className={BTN_OUTLINE}>
@@ -234,7 +234,7 @@ export default function ClippingsApp() {
           </div>
         </header>
 
-        <main className="mx-auto flex max-w-[1280px] flex-wrap items-start gap-10 px-10 py-10">
+        <main className="mx-auto flex max-w-[1280px] flex-wrap items-start gap-6 px-4 pt-6 pb-24 sm:px-6 sm:py-10 lg:gap-10 lg:px-10">
           <section className="min-w-0 flex-[1_1_460px]" aria-label="Page preview">
             {result.pages.length > 1 && (
               <div className="mb-3 flex gap-2">
@@ -245,6 +245,9 @@ export default function ClippingsApp() {
                 ))}
               </div>
             )}
+            <a href={result.previews[page]} target="_blank" rel="noreferrer" className="mb-2 inline-block text-[13px] font-medium text-navy underline sm:hidden">
+              Open page full size (pinch to zoom)
+            </a>
             {/* eslint-disable-next-line @next/next/no-img-element -- generated proof image */}
             <img src={result.previews[page]} alt={`Page ${result.pages[page]?.number} of the newspaper`} className="block w-full max-w-[640px] border border-rule bg-white shadow-[0_8px_24px_-14px_rgba(23,20,15,.5)]" />
           </section>
@@ -306,16 +309,16 @@ export default function ClippingsApp() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-10 py-3.5">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-4 sm:px-6 lg:px-10 py-3.5">
         <Brand paperName={config.paperName} sub={config.date} />
         <button onClick={startFresh} className={BTN_OUTLINE}>
           Start over
         </button>
       </header>
 
-      <main className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-10 px-10 py-10">
+      <main className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-6 px-4 pt-6 pb-24 sm:px-6 sm:py-10 lg:gap-10 lg:px-10">
         <section className="min-w-0 flex-[1_1_560px]" aria-labelledby="up-h">
-          <h1 id="up-h" className="m-0 font-display text-[34px] leading-[1.15] font-bold tracking-[-0.01em]">
+          <h1 id="up-h" className="m-0 font-display text-[28px] sm:text-[34px] leading-[1.15] font-bold tracking-[-0.01em]">
             Upload your clippings
           </h1>
           <p className="mt-2 mb-5 max-w-[560px] text-[15px] text-ink-soft">Drop the article images. Mark one as the Lead. The app tiles them into a finished front page.</p>
@@ -353,24 +356,24 @@ export default function ClippingsApp() {
           {items.length > 0 && (
             <ul className="m-0 mt-6 flex list-none flex-col gap-3 p-0">
               {items.map((it) => (
-                <li key={it.id} className="flex flex-wrap items-center gap-4 rounded-[3px] border border-rule bg-card p-3">
+                <li key={it.id} className="flex items-start gap-3 rounded-[3px] border border-rule bg-card p-3 sm:items-center sm:gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element -- local preview of an uploaded file */}
-                  <img src={it.url} alt="" className="h-[84px] w-[84px] flex-none rounded-[2px] border border-rule-soft bg-white object-contain" />
+                  <img src={it.url} alt="" className="size-16 flex-none rounded-[2px] border border-rule-soft bg-white object-contain sm:size-[84px]" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[14px] font-semibold">{it.file.name}</div>
                     <div className="text-[12px] text-muted">{(it.file.size / 1024).toFixed(0)} KB</div>
-                    <div role="radiogroup" aria-label={`Priority for ${it.file.name}`} className="mt-2 inline-flex rounded-[3px] border border-rule-strong p-0.5">
+                    <div role="radiogroup" aria-label={`Priority for ${it.file.name}`} className="mt-2 flex w-full rounded-[3px] border border-rule-strong p-0.5 sm:inline-flex sm:w-auto">
                       {PRIORITIES.map((p) => {
                         const on = it.priority === p.v;
                         return (
-                          <button key={p.v} type="button" role="radio" aria-checked={on} title={p.hint} onClick={() => setPriority(it.id, p.v)} className={`cursor-pointer rounded-[2px] px-3.5 py-1.5 text-[13px] transition-colors ${on ? "bg-navy font-semibold text-white" : "text-ink-soft hover:bg-hover"}`}>
+                          <button key={p.v} type="button" role="radio" aria-checked={on} title={p.hint} onClick={() => setPriority(it.id, p.v)} className={`min-h-10 flex-1 cursor-pointer rounded-[2px] px-1.5 py-1.5 text-[13px] transition-colors sm:min-h-0 sm:flex-none sm:px-3.5 ${on ? "bg-navy font-semibold text-white" : "text-ink-soft hover:bg-hover"}`}>
                             {p.label}
                           </button>
                         );
                       })}
                     </div>
                   </div>
-                  <button onClick={() => remove(it.id)} aria-label={`Remove ${it.file.name}`} className={`${BTN} inline-flex size-11 items-center justify-center rounded-[3px] border border-rule text-ink`}>
+                  <button onClick={() => remove(it.id)} aria-label={`Remove ${it.file.name}`} className={`${BTN} inline-flex size-11 flex-none items-center justify-center rounded-[3px] border border-rule text-ink`}>
                     <IconTrash size={18} />
                   </button>
                 </li>

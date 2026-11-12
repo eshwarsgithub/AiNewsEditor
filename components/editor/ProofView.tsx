@@ -61,7 +61,7 @@ export default function ProofView({ config, result, drafts, setDrafts, stale, se
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-10 py-3.5">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink px-4 sm:px-6 lg:px-10 py-3.5">
         <Brand paperName={config.paperName} sub={`Proof${config.date ? ` · ${config.date}` : ""}`} />
         <div className="flex flex-wrap items-center gap-3">
           <button
@@ -86,18 +86,18 @@ export default function ProofView({ config, result, drafts, setDrafts, stale, se
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-[1440px] flex-wrap items-start gap-8 px-10 pt-7 pb-14">
+      <main className="mx-auto flex max-w-[1440px] flex-wrap items-start gap-8 px-4 pt-6 pb-24 sm:px-6 sm:pt-7 sm:pb-14 lg:px-10">
         {/* Thumbnails */}
-        <nav aria-label="Pages" className="flex flex-none flex-col gap-3.5">
+        <nav aria-label="Pages" className="flex w-full min-w-0 flex-none flex-col gap-3.5 sm:w-auto">
           <span className={`${LABEL} pl-1.5`}>Pages</span>
-          <div className="flex flex-col gap-3.5">
+          <div className="flex flex-row gap-3.5 overflow-x-auto pb-2 sm:flex-col sm:overflow-visible sm:pb-0">
             {pages.map((p, i) => {
               const active = p.number === page.number;
               const warns = pageWarnCount(p.number);
               return (
                 <button
                   key={p.number}
-                  className={`${BTN} flex flex-col items-center gap-1.5 rounded-[3px] border-0 bg-transparent p-1.5 text-xs font-semibold text-ink`}
+                  className={`${BTN} flex flex-none flex-col items-center gap-1.5 rounded-[3px] border-0 bg-transparent p-1.5 text-xs font-semibold text-ink`}
                   onClick={() => setPageNo(p.number)}
                   aria-current={active ? "page" : undefined}
                   aria-label={`Page ${p.number}${warns ? `, ${warns} ${warns === 1 ? "warning" : "warnings"}` : ""}`}
