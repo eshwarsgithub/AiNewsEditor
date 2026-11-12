@@ -102,7 +102,9 @@ npm run deploy    # build and deploy to your Cloudflare account
 
 - **The Worker name in `wrangler.jsonc` (`ainewseditor`) must match the Worker in the Cloudflare dashboard**, including the `WORKER_SELF_REFERENCE` service binding. A mismatch fails the deploy with error 10143.
 - **Set `OPENROUTER_API_KEY` as a runtime secret** on the Worker (Settings → Variables and secrets), not as a build variable.
-- **Current status:** the screens, the sample edition and the AI-status check work on Workers. **PDF generation does not yet**: it needs a local file system and Chromium, so on a Worker it returns a clear "not enabled" message. Enabling it means moving to Cloudflare Browser Rendering (proven in `spikes/cf-pdf/`) and R2 for the generated files.
+- **Current status:** everything works on Workers, including PDF generation. The layout runs in Cloudflare Browser Rendering (`BROWSER` binding, started through `worker-entry.mjs`), and finished PDFs and page previews are stored in an R2 bucket (`OUT` binding, `ainewseditor-out`). Create the bucket once with `npx wrangler r2 bucket create ainewseditor-out` (R2 must be enabled on the account).
+- **Limits:** the free plan allows about 10 browser-minutes a day and one new browser every 20 seconds; the paid Workers plan ($5/month) is recommended for real use.
+- Fonts and sample photos are embedded in `lib/render/embedded.generated.ts`. If you change them, run `node scripts/gen-embedded.mjs`.
 - The deployed bundle is about 2.5 MB compressed, close to the 3 MB free-plan limit.
 
 ## Limitations
@@ -115,8 +117,7 @@ npm run deploy    # build and deploy to your Cloudflare account
 
 ## Roadmap
 
-- Host on Cloudflare Workers, with the PDF engine on Browser Rendering
-- Persist photos and PDFs in R2 and editions in D1; sign-in through Cloudflare Access
+- Persist editions in D1 and photos in R2; sign-in through Cloudflare Access
 - Language selector (fonts, date line, AI output language)
 - Automatic gap filling and style learning from past editions
 
