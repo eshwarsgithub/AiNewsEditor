@@ -5,7 +5,7 @@ import type { BuildStage, EditionConfig, PagePlan, ProofPage } from "../types";
 import { documentHtml } from "./html";
 import { PAGE_H, PAGE_W } from "./css";
 import { layoutInPage } from "./layoutCore";
-import { SAMPLE_BG_JS } from "../clippings/html";
+import { SAMPLE_BG_JS, SHARPEN_JS } from "../clippings/html";
 
 export type BuildResult = {
   pdfPath: string;
@@ -55,6 +55,7 @@ export async function buildClippingsLocal(html: string, outDir: string, name = "
     const page = await browser.newPage({ viewport: { width: Math.round(PAGE_W * 3.78), height: Math.round(PAGE_H * 3.78) } });
     await page.setContent(html, { waitUntil: "load" });
     await page.evaluate("document.fonts.ready");
+    await page.evaluate(SHARPEN_JS);
     await page.evaluate(SAMPLE_BG_JS);
     onStage("check");
     const pdfPath = path.join(outDir, `${name}.pdf`);

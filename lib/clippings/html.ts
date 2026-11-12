@@ -41,6 +41,56 @@ export const SAMPLE_BG_JS = `(async () => {
   return imgs.length;
 })()`;
 
+/**
+ * Print sharpening: a PDF cannot hold more detail than the clipping has, but a low-resolution image
+ * prints blocky when the printer scales it. So each clipping is resampled up to ~300 dpi at the size
+ * it is placed (smooth, in steps of 2x), then given an unsharp mask so text edges stay crisp.
+ * Runs in the render browser; passed to page.evaluate() as a string.
+ */
+export const SHARPEN_JS = `(async () => {
+  const imgs = Array.from(document.querySelectorAll('.clip img'));
+  await Promise.all(imgs.map((i) => (i.decode ? i.decode().catch(() => {}) : Promise.resolve())));
+  let n = 0;
+  for (const img of imgs) {
+    try {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const box = img.getBoundingClientRect();
+      const shownW = Math.min(box.width, (box.height * w) / h);
+      const factor = Math.min(((shownW / 96) * 300) / w, 4);
+      if (factor < 1.3) continue;
+      const tw = Math.round(w * factor);
+      let cur = img, cw = w, canvas = null;
+      while (cw < tw) {
+        const nw = Math.min(tw, cw * 2), nh = Math.round((nw * h) / w);
+        canvas = document.createElement('canvas'); canvas.width = nw; canvas.height = nh;
+        const c = canvas.getContext('2d');
+        c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+        c.drawImage(cur, 0, 0, nw, nh);
+        cur = canvas; cw = nw;
+      }
+      const ch = canvas.height;
+      const ctx = canvas.getContext('2d');
+      const data = ctx.getImageData(0, 0, cw, ch);
+      const blur = document.createElement('canvas'); blur.width = cw; blur.height = ch;
+      const bctx = blur.getContext('2d');
+      bctx.filter = 'blur(' + (factor * 0.55).toFixed(2) + 'px)';
+      bctx.drawImage(canvas, 0, 0);
+      const b = bctx.getImageData(0, 0, cw, ch).data, d = data.data;
+      for (let i = 0; i < d.length; i += 4) {
+        for (let k = 0; k < 3; k++) {
+          const diff = d[i + k] - b[i + k];
+          if (diff > 3 || diff < -3) { const v = d[i + k] + 0.9 * diff; d[i + k] = v < 0 ? 0 : v > 255 ? 255 : v; }
+        }
+      }
+      ctx.putImageData(data, 0, 0);
+      img.src = canvas.toDataURL('image/jpeg', 0.95);
+      await img.decode();
+      n++;
+    } catch (e) { /* keep the original image */ }
+  }
+  return n;
+})()`;
+
 function pageHtml(p: PackedPage, cfg: EditionConfig, images: Map<string, string>) {
   const head = p.kind === "front" ? mastheadHtml(cfg) : stripHtml(p.number, cfg, "");
   const cells = p.placed

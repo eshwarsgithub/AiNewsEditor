@@ -4,7 +4,7 @@ import type { BuildStage, EditionConfig, PagePlan, ProofPage } from "../types";
 import { documentHtml } from "./html";
 import { PAGE_H, PAGE_W } from "./css";
 import { layoutInPage } from "./layoutCore";
-import { SAMPLE_BG_JS } from "../clippings/html";
+import { SAMPLE_BG_JS, SHARPEN_JS } from "../clippings/html";
 
 export type CfBuildResult = {
   pdf: Uint8Array;
@@ -48,6 +48,7 @@ export async function buildClippingsOnCloudflare(browserBinding: BrowserWorker, 
     const page = await browser.newPage({ viewport: { width: Math.round(PAGE_W * 3.78), height: Math.round(PAGE_H * 3.78) } });
     await page.setContent(html, { waitUntil: "load" });
     await page.evaluate("document.fonts.ready");
+    await page.evaluate(SHARPEN_JS);
     await page.evaluate(SAMPLE_BG_JS);
     onStage("check");
     const pdf = await page.pdf({ width: `${PAGE_W}mm`, height: `${PAGE_H}mm`, printBackground: true, preferCSSPageSize: true });
