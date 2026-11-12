@@ -1,5 +1,5 @@
 # AI News Editor 
-
+ 
 Add stories and photos, press one button, and get a print-ready newspaper PDF.
 
 Built for Telugu dailies (and designed to grow to other Indian languages). Editors drop in their stories; the app acts as the layout editor: it decides what leads, fits the text into a 6-column broadsheet, builds the "continued on page 2" jumps, and exports the pages for print.
