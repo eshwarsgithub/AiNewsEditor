@@ -49,9 +49,22 @@ export function storyHtml(s: PlacedStory, tone = 5, weight?: number) {
   </article>`;
 }
 
-const regbar = `<div class="regbar">${["#00aeef", "#ec008c", "#fff200", "#000", "#8dd3f0", "#f8a1d1", "#fff7a1", "#777"]
+export const regbar = `<div class="regbar">${["#00aeef", "#ec008c", "#fff200", "#000", "#8dd3f0", "#f8a1d1", "#fff7a1", "#777"]
   .map((c) => `<i style="background:${c};border:0.2mm solid #000"></i>`)
   .join("")}</div>`;
+
+export function mastheadHtml(cfg: EditionConfig) {
+  return `<header class="masthead"><div class="name">${esc(cfg.paperName)}</div><div class="en">${esc(cfg.paperNameEn)}${cfg.tagline ? `<br/>${esc(cfg.tagline)}` : ""}</div></header>
+    <div class="infobar">${[cfg.issue && `ISSUE - ${cfg.issue}`, cfg.volume && `VOLUME - ${cfg.volume}`, cfg.date, cfg.price].filter(Boolean).map((t) => `<span>${esc(String(t))}</span>`).join("")}</div>`;
+}
+
+export function stripHtml(num: number, cfg: EditionConfig, label: string) {
+  return `<div class="strip">
+      <div class="num">${num}</div>
+      <div class="brand"><div class="name">${esc(cfg.paperName)}</div><div class="en">${esc(cfg.paperNameEn)}</div></div>
+      <div class="sect"><span>${esc(cfg.date)}</span><b>${esc(label)}</b></div>
+    </div>`;
+}
 
 function frontHtml(p: PagePlan, cfg: EditionConfig) {
   const by = (slot: string) => p.stories.filter((s) => s.slot === slot);
@@ -60,8 +73,7 @@ function frontHtml(p: PagePlan, cfg: EditionConfig) {
       ? `<div class="row ${cls}">${stories.map((s, i) => storyHtml(s, (toneStart + i) % 5)).join("")}</div>`
       : "";
   return `<section class="page front" data-page="1">
-    <header class="masthead"><div class="name">${esc(cfg.paperName)}</div><div class="en">${esc(cfg.paperNameEn)}${cfg.tagline ? `<br/>${esc(cfg.tagline)}` : ""}</div></header>
-    <div class="infobar">${[cfg.issue && `ISSUE - ${cfg.issue}`, cfg.volume && `VOLUME - ${cfg.volume}`, cfg.date, cfg.price].filter(Boolean).map((t) => `<span>${esc(String(t))}</span>`).join("")}</div>
+    ${mastheadHtml(cfg)}
     <div class="rows">
       ${row("r1", by("teaser"), 0)}
       ${row("r2", by("mid"), 2)}
@@ -75,11 +87,7 @@ function insideHtml(p: PagePlan, cfg: EditionConfig) {
   const main = p.stories.filter((s) => s.slot === "main");
   const w = (s: PlacedStory) => Math.max(400, Math.min(s.article.body.length, 3200)) + (s.article.image ? 700 : 0);
   return `<section class="page inside-page" data-page="${p.number}">
-    <div class="strip">
-      <div class="num">${p.number}</div>
-      <div class="brand"><div class="name">${esc(cfg.paperName)}</div><div class="en">${esc(cfg.paperNameEn)}</div></div>
-      <div class="sect"><span>${esc(cfg.date)}</span><b>${esc(p.section)}</b></div>
-    </div>
+    ${stripHtml(p.number, cfg, p.section)}
     <div class="inside no-rail" data-inside="${p.number}">
       <div class="main">${main.map((s) => storyHtml(s, 5, w(s))).join("")}</div>
       <aside class="rail" data-rail="${p.number}"></aside>

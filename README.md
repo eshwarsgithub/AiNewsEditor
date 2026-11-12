@@ -4,7 +4,14 @@ Add stories and photos, press one button, and get a print-ready newspaper PDF.
 
 Built for Telugu dailies (and designed to grow to other Indian languages). Editors drop in their stories; the app acts as the layout editor: it decides what leads, fits the text into a 6-column broadsheet, builds the "continued on page 2" jumps, and exports the pages for print.
 
-## What it does
+## Two versions (pilot)
+
+A bar at the top of the page lets the client switch between two flows; the choice is remembered in the browser (or use `/?v=1` and `/?v=2`).
+
+- **Version 1: Upload clippings (default).** Editors drop finished article images, mark each one **Lead**, **General** or **Inside**, and press Generate. The images are kept exactly as uploaded and tiled into a full front page under the masthead (`lib/clippings/pack.ts`). The Lead is always the biggest block; its position is a setting (**Top** is the standard, or Middle or Bottom, as in the Nov 11 sample). Tall narrow clippings are stacked in pairs, General clippings that do not fit and everything marked Inside go to pages 2 and later, and the proof warns about low-resolution images and empty space. No AI is used.
+- **Version 2: Story desk.** The original flow: type or paste stories, optional AI editor, automatic fitting and jumps (described below).
+
+## What it does (Version 2)
 
 - **Story desk.** Type or paste stories, attach `.docx` files and photos, and give each story an importance from 1 to 10. Drafts autosave in the browser.
 - **One-click layout.** A 340 × 540 mm, 6-column broadsheet: masthead, info bar, front-page teasers, mid stories, a lead and a side story, then inside pages grouped by section.
@@ -70,6 +77,10 @@ When switched on, all stories go to the model in a single request through [OpenR
 - Regenerating from the proof screen does not call the model again, so manual adjustments are not overwritten.
 
 The default model was chosen for low cost ($0.10 / $0.40 per million tokens at the time of writing) and good Indic-language output. It has not been benchmarked on Telugu, so check real output before relying on it.
+
+## Version 1 internals
+
+`components/clippings/ClippingsApp.tsx` (upload, priorities, proof) posts to `app/api/clippings/route.ts`, which reads each image's size from its header (`lib/clippings/imageSize.ts`), asks `packClippings` for the layout (rows, stacked pairs, row heights stretched to fill the page, padding in the clipping's own edge colour), builds the pages in `lib/clippings/html.ts` and renders them with the same Chromium paths as Version 2 (local Playwright or Cloudflare Browser Rendering, results in R2). `npx tsx scripts/test-pack.ts` prints sample layouts.
 
 ## Project structure
 

@@ -1,5 +1,5 @@
-import EditorApp from "@/components/editor/EditorApp";
+import Home from "@/components/Home";
 
-export default function Home() {
-  return <EditorApp />;
+export default function Page() {
+  return <Home />;
 }

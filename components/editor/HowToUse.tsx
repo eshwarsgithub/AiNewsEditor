@@ -22,7 +22,9 @@ const STEPS: { title: string; text: string }[] = [
   },
 ];
 
-export default function HowToUse() {
+export type HowStep = { title: string; text: string };
+
+export default function HowToUse({ steps = STEPS, footer }: { steps?: HowStep[]; footer?: boolean } = {}) {
   const ref = useRef<HTMLDialogElement>(null);
 
   return (
@@ -66,7 +68,7 @@ export default function HowToUse() {
         </div>
 
         <ol className="m-0 list-none px-6 py-2">
-          {STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <li key={s.title} className="flex gap-4 border-b border-rule-soft py-4 last:border-b-0">
               <span aria-hidden="true" className="inline-flex size-[26px] flex-none items-center justify-center rounded-full bg-navy text-[13px] font-semibold text-white">
                 {i + 1}
@@ -79,6 +81,7 @@ export default function HowToUse() {
           ))}
         </ol>
 
+        {footer !== false ? (
         <div className="flex flex-col gap-2 border-t border-rule-soft bg-paper px-6 py-4 text-[13px] leading-[1.55] text-ink-soft">
           <p className="m-0">
             <strong className="font-semibold text-ink">Short on time?</strong> Switch on the <strong className="font-semibold text-ink">AI editor</strong>. Just paste the story text. The AI writes the
@@ -86,6 +89,7 @@ export default function HowToUse() {
           </p>
           <p className="m-0">Your work saves on this computer by itself, so you will not lose it if you close the page.</p>
         </div>
+        ) : null}
       </dialog>
     </>
   );
